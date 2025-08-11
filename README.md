@@ -38,9 +38,9 @@ A modern **React Native** HRMS app for employees to manage attendance, leaves, t
 
 ## 📸 Screenshots  
 
-| Dashboard | Attendance | Leave Requests | Policies |
+| Dashboard | Announcements | Leave Requests | Policies |
 |-----------|------------|----------------|----------|
-| ![Dashboard](docs/home.png) | ![Attendance](docs/attendance.png) | ![Leave](docs/leave_requests.png) | ![Policies](docs/policies.png) |
+| ![Dashboard](docs/home.png) | ![Announcements](docs/announcements.png) | ![Leave](docs/leave_requests.png) | ![Policies](docs/policies.png) |
 
 ---
 
