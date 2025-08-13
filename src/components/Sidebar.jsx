@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Animated, Dimensions } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Animated, Dimensions, ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import LinearGradient from 'react-native-linear-gradient';
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
 const Sidebar = ({ navigation, isVisible, setSidebarVisible }) => {
   const slideAnim = React.useRef(new Animated.Value(-width)).current;
@@ -45,6 +45,9 @@ const Sidebar = ({ navigation, isVisible, setSidebarVisible }) => {
     { icon: 'school', label: 'Training', screen: 'Training' },
     { icon: 'announcement', label: 'Announcements', screen: 'Announcement' },
     { icon: 'policy', label: 'Policies', screen: 'Policies' },
+    // { icon: 'settings', label: 'Settings', screen: 'Settings' },
+    // { icon: 'help', label: 'Help & Support', screen: 'Help' },
+    // { icon: 'exit-to-app', label: 'Logout', screen: 'Logout' },
   ];
 
   return (
@@ -69,7 +72,11 @@ const Sidebar = ({ navigation, isVisible, setSidebarVisible }) => {
         </TouchableOpacity>
       </LinearGradient>
 
-      <View style={styles.menuItems}>
+      <ScrollView 
+        style={styles.scrollContainer}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
         {sidebarItems.map((item, index) => (
           <TouchableOpacity
             key={index}
@@ -84,9 +91,7 @@ const Sidebar = ({ navigation, isVisible, setSidebarVisible }) => {
             <Icon name="chevron-right" size={20} color="#aaa" />
           </TouchableOpacity>
         ))}
-      </View>
-
-     
+      </ScrollView>
     </Animated.View>
   );
 };
@@ -122,9 +127,13 @@ const styles = StyleSheet.create({
   closeButton: {
     padding: 5,
   },
-  menuItems: {
+  scrollContainer: {
+    flex: 1,
+  },
+  scrollContent: {
     paddingVertical: 15,
     paddingHorizontal: 10,
+    paddingBottom: 30, // Extra padding at the bottom
   },
   sidebarItem: {
     flexDirection: 'row',
@@ -150,7 +159,6 @@ const styles = StyleSheet.create({
     flex: 1,
     fontWeight: '500',
   },
-
 });
 
 export default Sidebar;

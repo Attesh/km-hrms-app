@@ -19,6 +19,7 @@ import TrainingDetails  from './src/screen/TrainingDetails';
 import AnnouncementDetails  from './src/screen/AnnouncementDetails';
 import PolicyDetails  from './src/screen/PolicyDetails';
 import TaskDetails  from './src/screen/TaskDetails';
+import SessionCheck   from './src/screen/SessionCheck';
 
 const Stack = createNativeStackNavigator();
 
@@ -28,6 +29,11 @@ const App = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen 
+          name="SessionCheck" 
+          component={SessionCheck} 
+          options={{ animationEnabled: false }} 
+        />
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="Home" component={Home} />
         <Stack.Screen name="Employees" component={Employees} />

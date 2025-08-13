@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -14,13 +14,18 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BASE_URL } from '../config';
 
-
-
-const LoginScreen = ({ navigation }) => {
+const LoginScreen = ({ navigation, route }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('hr');
   const [isLoading, setIsLoading] = useState(false);
+
+  // Moved useEffect to the top level
+  useEffect(() => {
+    if (route.params?.error) {
+      Alert.alert('Session Expired', route.params.error);
+    }
+  }, [route.params]);
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -31,7 +36,7 @@ const LoginScreen = ({ navigation }) => {
     setIsLoading(true);
     
     try {
-      console.log('Attempting login with:', { role, email, password }); // Debug log
+      console.log('Attempting login with:', { role, email, password });
       
       const response = await axios.post(`${BASE_URL}/login`, {
         role,
@@ -45,7 +50,7 @@ const LoginScreen = ({ navigation }) => {
         }
       });
 
-      console.log('Login response:', response.data); // Debug log
+      console.log('Login response:', response.data);
       
       const { token, user } = response.data;
       
@@ -53,25 +58,19 @@ const LoginScreen = ({ navigation }) => {
       await AsyncStorage.multiSet([
         ['userToken', token],
         ['userData', JSON.stringify(user)],
-        ['userRole', role]
+        ['userRole', role],
+        ['password', password],
+        ['email', email],
       ]);
 
-      navigation.navigate('Home');
+      // Use replace instead of navigate to prevent going back to login
+      navigation.replace('Home');
     } catch (error) {
-      // console.error('Full error object:', JSON.stringify(error, null, 2)); // Detailed error log
-      
       let errorMessage = 'Login failed. Please try again.';
-      let serverMessage = '';
       
       if (axios.isAxiosError(error)) {
-        // Axios-specific error handling
         if (error.response) {
-          // Server responded with a status code outside 2xx range
-          console.log('Error response data:', error.response.data);
-          console.log('Error status:', error.response.status);
-          console.log('Error headers:', error.response.headers);
-          
-          serverMessage = error.response.data?.message || error.response.data?.error || '';
+          const serverMessage = error.response.data?.message || error.response.data?.error || '';
           
           switch (error.response.status) {
             case 400:
@@ -93,38 +92,13 @@ const LoginScreen = ({ navigation }) => {
               errorMessage = serverMessage || 'An unexpected error occurred.';
           }
         } else if (error.request) {
-          // Request was made but no response received
-          console.log('Error request:', error.request);
           errorMessage = 'Network error. Please check your internet connection.';
         } else {
-          // Something happened in setting up the request
-          console.log('Error config:', error.config);
           errorMessage = 'Request setup error. Please try again.';
         }
-      } else {
-        // Non-Axios error
-        console.log('Non-Axios error:', error);
-        errorMessage = 'An unexpected error occurred.';
       }
       
-      Alert.alert(
-        'Login Failed',
-        errorMessage,
-        [
-          {
-            text: 'OK',
-            onPress: () => console.log('User acknowledged login error'),
-          },
-          error.response?.status === 500 ? {
-            text: 'Report Issue',
-            onPress: () => {
-              // Here you could implement error reporting
-              console.log('User wants to report the 500 error');
-              // navigation.navigate('ReportIssue', { errorDetails: error.response?.data });
-            }
-          } : null,
-        ].filter(Boolean) // Remove null items
-      );
+      Alert.alert('Login Failed', errorMessage);
     } finally {
       setIsLoading(false);
     }
